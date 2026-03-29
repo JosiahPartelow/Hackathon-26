@@ -764,6 +764,7 @@ class SceneManager:
             "has_backpack"  : False,
             "has_eaten"     : False,
             "closet_closed" : False,
+            "go_to_school"  : False,
         }
         self.current_scene_name = ""
 
@@ -1054,6 +1055,7 @@ class Scene1Morning(State):
         for i, (done, txt) in enumerate([
             (f["has_backpack"], "✓ Grab backpack"  if f["has_backpack"] else "○ Grab backpack"),
             (f["has_eaten"],    "✓ Eat breakfast"  if f["has_eaten"]    else "○ Eat breakfast"),
+            (f["go_to_school"], "○ Go to school")
         ]):
             col = (100, 220, 100) if done else (200, 200, 200)
             surface.blit(fnt.render(txt, True, col), (20, 68 + i * 18))
@@ -1254,7 +1256,7 @@ class Scene3Closet(State):
     - Closet banging SFX plays on a random interval
     """
 
-    MENU_TIMEOUT = 20
+    MENU_TIMEOUT = 6.5
     EYES_BLINK   = 1.2   # seconds per blink cycle
 
     def on_enter(self, game):

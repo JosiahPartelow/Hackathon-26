@@ -38,7 +38,7 @@ ASSET SLOTS
 # ---------------------------------------------------------------------------
 # Standard library
 # ---------------------------------------------------------------------------
-import sys, math, random, collections, threading
+import sys, math, random, collections, threading, pylsl
 
 # ---------------------------------------------------------------------------
 # Third-party
@@ -390,7 +390,7 @@ class AudioManager:
     def _update_music(self, stress: float):
         if not self.eeg_active:
             return
-        key = "calm_music" if stress < STRESS_HIGH else "tense_music"
+        key = "tense_music"
         if key != self._current_music_key:
             self.play_music(key)
 
@@ -1259,6 +1259,7 @@ class Scene3Closet(State):
 
     def on_enter(self, game):
         game.scene_mgr.current_scene_name = "scene3"
+        game.audio.stop_all()
         game.audio.eeg_active = True
         game.audio.play_music("tense_music", fade_ms=1000)
         # ASSET: game.audio.play_sfx("closet_creak")
@@ -1289,6 +1290,7 @@ class Scene3Closet(State):
 
     def _choose(self, game, choice):
         self._chosen = choice
+        game.audio.stop_all()
         game.scene_mgr.game_flags["closet_closed"] = (choice == "yes")
 
     def update(self, game, dt):

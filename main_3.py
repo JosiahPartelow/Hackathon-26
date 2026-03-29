@@ -38,7 +38,7 @@ ASSET SLOTS
 # ---------------------------------------------------------------------------
 # Standard library
 # ---------------------------------------------------------------------------
-import sys, math, random, collections, threading
+import sys, math, random, collections, threading, pylsl
 
 # ---------------------------------------------------------------------------
 # Third-party

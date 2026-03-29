@@ -1087,7 +1087,6 @@ class FakeCrashState(State):
 
     def on_enter(self, game):
         game.audio.stop_all()
-        # ASSET: game.audio.play_one_shot("crash_sound")
         self._surface = build_fake_crash_surface()
         self._timer   = 0.0
         self._done    = False
@@ -1100,6 +1099,7 @@ class FakeCrashState(State):
         if self._timer >= self.HOLD_DURATION and not self._done:
             self._done = True
             game.change_state("jumpscare")
+            game.audio.play_one_shot("crash_sound")
 
     def draw(self, game, surface):
         surface.blit(self._surface, (0, 0))

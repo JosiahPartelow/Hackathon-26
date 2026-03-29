@@ -1254,7 +1254,7 @@ class Scene3Closet(State):
     - Closet banging SFX plays on a random interval
     """
 
-    MENU_TIMEOUT = 20
+    MENU_TIMEOUT = 6.5
     EYES_BLINK   = 1.2   # seconds per blink cycle
 
     def on_enter(self, game):

@@ -370,11 +370,11 @@ class Player:
         pygame.draw.circle(surface, C_BLACK, (r.centerx - 5, eye_y), 1)
         pygame.draw.circle(surface, C_BLACK, (r.centerx + 5, eye_y), 1)
 
-        # Creat transparent surfaces for
-        pygame.draw.rect(surface, C_PLAYER, (r.centerx - 14, r.bottom - 14, 5, 15))
+        # Left
+        pygame.draw.rect(surface, C_PLAYER, (r.centerx - 11, r.bottom - 14, 5, 15))
 
         # Right leg
-        pygame.draw.rect(surface, C_PLAYER, (r.centerx + 9, r.bottom - 14, 5, 15))
+        pygame.draw.rect(surface, C_PLAYER, (r.centerx + 6, r.bottom - 14, 5, 15))
                          
 
 class Monster:
@@ -430,6 +430,24 @@ class Monster:
         surface.blit(tmp, r.topleft)
 
 
+class Interactable(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.image = pygame.Surface((width, height))
+        self.image.fill((0, 255, 0)) # Green box
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.interact_range = 100 
+
+    def is_near(self, player_rect):
+        # Create vectors for the centers of both objects
+        player_vec = pygame.math.Vector2(player_rect.center)
+        target_vec = pygame.math.Vector2(self.rect.center)
+        
+        # Calculate distance
+        distance = player_vec.distance_to(target_vec)
+        return distance < self.interact_range
+
+
 # =============================================================================
 # WORLD RENDERER
 # =============================================================================
@@ -447,6 +465,8 @@ class World:
         self.inner_rect = pygame.Rect(200, 0, self.WORLD_W - 400, self.FLOOR_Y)
         # Window in the left wall (the monster peeks through here)
         self.window_rect = pygame.Rect(210, SCREEN_H // 2 - 80, 80, 120)
+        
+        self.table = Interactable(600, self.FLOOR_Y - 70, 140, 70)
 
     def get_camera_offset(self, player_x: float) -> int:
         """Centre camera on player, clamped to world bounds."""
@@ -489,7 +509,8 @@ class World:
 
         # Furniture silhouettes ────────────────────────────────────────────
         # Table
-        self._draw_rect(surface, cam, 600, self.FLOOR_Y - 70, 140, 70, (55, 40, 30))
+        #self._draw_rect(surface, cam, 600, self.FLOOR_Y - 70, 140, 70, (55, 40, 30))
+        table = Interactable(600, self.FLOOR_Y - 70, 140, 70)
         # Sofa
         self._draw_rect(surface, cam, 900, self.FLOOR_Y - 90, 200, 90, (50, 35, 60))
         # Bookshelf

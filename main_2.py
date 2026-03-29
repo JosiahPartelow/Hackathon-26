@@ -307,9 +307,9 @@ class AudioManager:
         self._sounds = {
             "calm_music"  : pygame.mixer.Sound("./assets/calm_loop.wav"),
             "tense_music" : pygame.mixer.Sound("./assets/tense_loop.wav"),
-            "sting_med"   : self._make_tone(300, 1.5, vol=0.6),
+            "sting_med"   : pygame.mixer.Sound("./assets/know_youre_in.wav"),
             "sting_high"  : pygame.mixer.Sound("./assets/I_see_you.wav"),
-            "crash_sound" : self._make_tone(60,  0.5, vol=1.0,  wave="noise"),
+            "crash_sound" : pygame.mixer.Sound("./assets/crash.wav"),
             # Very quiet wind loop played only during calibration
             "ambient_wind" : self._make_tone(55,  4.0, vol=0.07, wave="noise"),
         }

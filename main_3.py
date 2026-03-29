@@ -310,10 +310,10 @@ class AudioManager:
 
         self._sounds = {
             # ── Music loops ──────────────────────────────────────────────────
-            "calm_music"    : pygame.mixer.Sound("./assets/calm_loop.wav"),
+            "calm_music"    : pygame.mixer.Sound("./assets/calm_loop (quiter).wav"),
             "tense_music"   : pygame.mixer.Sound("./assets/tense_loop.wav"),
             # ── Narrative stings ─────────────────────────────────────────────
-            # "ominous_sting" : pygame.mixer.Sound("./assets/ominous_sting.wav"),
+            "ominous_sting" : pygame.mixer.Sound("./assets/ominous_sting.wav"),
             "sting_med"     : pygame.mixer.Sound("./assets/know_youre_in.wav"),
             "sting_high"    : pygame.mixer.Sound("./assets/I_see_you.wav"),
             "crash_sound"   : pygame.mixer.Sound("./assets/crash.wav"),
@@ -463,12 +463,14 @@ class Player:
 
     def draw(self, surface: pygame.Surface, cam: int = 0):
         r = self.rect.move(-cam, 0)
-        pygame.draw.rect(surface, C_PLAYER, r, border_radius=4)
+        pygame.draw.circle(surface, (200, 150, 120), (r.centerx, r.top - 12), 12)
+
+        pygame.draw.rect(surface, C_PLAYER, r, border_radius=3)
         # ASSET: surface.blit(player_sprite, r.topleft)
-        ey = r.top + 10
-        for ex in (r.centerx - 5, r.centerx + 5):
-            pygame.draw.circle(surface, C_WHITE, (ex, ey), 3)
-            pygame.draw.circle(surface, C_BLACK, (ex, ey), 1)
+        # ey = r.top + 10
+        # for ex in (r.centerx - 5, r.centerx + 5):
+            # pygame.draw.circle(surface, C_WHITE, (ex, ey), 3)
+            # pygame.draw.circle(surface, C_BLACK, (ex, ey), 1)
 
 
 # =============================================================================
@@ -926,15 +928,17 @@ class Scene1Morning(State):
         self.bounds  = pygame.Rect(0, 0, self.WORLD_W, self.FLOOR_Y)
 
         self.props = {
-            "backpack":  Prop(850,  self.FLOOR_Y - 44, 38, 44,
+            "backpack":  Prop(850,  self.FLOOR_Y - 44, 30, 40,
                               "Pick up Backpack", (60, 80, 160)),
-            "breakfast": Prop(340,  self.FLOOR_Y - 50, 80, 50,
+            "breakfast": Prop(400,  self.FLOOR_Y - 62, 20, 7,
                               "Eat Breakfast",    (180, 140, 80)),
-            "door":      Prop(1760, self.FLOOR_Y - 80, 40, 80,
+            "door":      Prop(1760, self.FLOOR_Y - 175, 85, 175,
                               "Leave for School", (100, 80, 60)),
         }
-        # ASSET: props["backpack"].sprite_path  = "assets/images/backpack.png"
-        # ASSET: props["breakfast"].sprite_path = "assets/images/breakfast.png"
+
+        # self.props["backpack"].sprite_path  = "./assets/backpack.png"
+        # self.props["breakfast"].sprite_path = "./assets/breakfast.png"
+
         # ASSET: props["door"].sprite_path      = "assets/images/front_door.png"
 
         self._dialogue     = None   # (text, speaker) or None
@@ -960,13 +964,13 @@ class Scene1Morning(State):
         if not bp.collected and bp.in_range(self.player):
             bp.collected         = True
             f["has_backpack"]    = True
-            self._show_dialogue("Mom: Great, don't forget it!", "Mom")
+            self._show_dialogue("Mom: Have a good day at school, sweetie!", "Mom")
             return
 
         if not brk.collected and brk.in_range(self.player):
             brk.collected     = True
             f["has_eaten"]    = True
-            self._show_dialogue("Mom: Good, eat up — school starts soon.", "Mom")
+            self._show_dialogue("Mom: Its the most important meal of the day!", "Mom")
             return
 
         if door.in_range(self.player):
@@ -977,9 +981,10 @@ class Scene1Morning(State):
             else:
                 game.change_state("scene2")
 
-    def _show_dialogue(self, text, speaker, duration=4.0):
+    def _show_dialogue(self, text, speaker, duration=2.0):
         self._dialogue  = (text, speaker)
         self._dia_timer = duration
+        
 
     def update(self, game, dt):
         keys = pygame.key.get_pressed()
@@ -1018,7 +1023,10 @@ class Scene1Morning(State):
         # Furniture
         # Kitchen table
         pygame.draw.rect(surface, (90, 60, 40),
-                         (280 - cam, self.FLOOR_Y - 55, 200, 55))
+                         (280 - cam, self.FLOOR_Y - 55, 175, 10))
+        pygame.draw.rect(surface, (90, 60, 40), (435 - cam, self.FLOOR_Y - 45, 10, 45))
+        pygame.draw.rect(surface, (90, 60, 40), (290 - cam, self.FLOOR_Y - 45, 10, 45))
+                          
         # Sofa
         pygame.draw.rect(surface, (80, 55, 90),
                          (750 - cam, self.FLOOR_Y - 85, 220, 85))
@@ -1064,7 +1072,7 @@ class Scene1Morning(State):
         # Mom NPC — simple humanoid silhouette
         mx = 300 - cam
         my = Scene1Morning.FLOOR_Y - 72
-        pygame.draw.rect(surface, (200, 150, 120), (mx, my, 26, 72))       # body
+        pygame.draw.rect(surface, (200, 150, 120), (mx, my, 26, 72), border_radius = 3)  # body
         pygame.draw.circle(surface, (230, 180, 140), (mx + 13, my - 16), 16)  # head
         # ASSET: surface.blit(mom_sprite, (mx, my - 16))
 
@@ -1087,7 +1095,7 @@ class Scene2Evening(State):
 
     # Dialogue sequence for the sink cutscene
     SINK_LINES = [
-        ("Mom: Hey, how was school? Can you come help me with these dishes?", "Mom"),
+        ("Mom: Hey, how was school? Did you have fun with your buddies?",      "Mom"),
         ("Mom: Listen, I know you like hanging out with your friends...",      "Mom"),
         ("Mom: ...but you can't hang out after dark.",                         "Mom"),
         ("Mom: There have been stories on the news lately...",                 "Mom"),
@@ -1099,7 +1107,7 @@ class Scene2Evening(State):
         game.scene_mgr.current_scene_name = "scene2"
         game.audio.eeg_active = False
         # Ominous music plays regardless of EEG for atmospheric reasons
-        game.audio.play_music("tense_music", fade_ms=3000)
+        game.audio.play_music("ominous_sting", fade_ms=3000)
 
         fl = float(self.FLOOR_Y - Player.H)
         self.player = Player(x=200.0, y=fl)
@@ -1122,7 +1130,7 @@ class Scene2Evening(State):
 
         # Greet on entry
         self._queue_dialogue([
-            ("Mom: Welcome home! Can you help me with the dishes?", "Mom")])
+            ("Mom: Welcome home! Would you like to help me with the dishes?", "Mom")])
 
     def handle_event(self, game, event):
         if event.type != pygame.KEYDOWN:
@@ -1207,7 +1215,7 @@ class Scene2Evening(State):
                          (20, 68))
         else:
             fnt = pygame.font.SysFont("monospace", 13)
-            surface.blit(fnt.render("○ Go upstairs to bed", True, (200, 200, 200)),
+            surface.blit(fnt.render("○ Go to bed", True, (200, 200, 200)),
                          (20, 68))
 
         if self._dia_active:
@@ -1246,7 +1254,7 @@ class Scene3Closet(State):
     - Closet banging SFX plays on a random interval
     """
 
-    MENU_TIMEOUT = 5.0
+    MENU_TIMEOUT = 20
     EYES_BLINK   = 1.2   # seconds per blink cycle
 
     def on_enter(self, game):
@@ -1538,11 +1546,13 @@ class Scene5BadEnding(State):
     """
 
     LINES = [
-        ("...",                                                            "You",  3.5),
-        ("You: I had a nightmare about a monster!",                        "You",  3.5),
-        ("Mom: Oh honey... it was just a dream. Go back to bed.",          "Mom",  4.0),
-        ("You: But I'm scared... I can't sleep.",                          "You",  3.5),
-        ("Mom: Ugh. When will you grow up and face your fears?",           "Mom",  4.5),
+        ("Mom: Is everything alright dear? It sounded like you were screaming just now.",       "Mom",  3.5),
+        ("You: I just had a nightmare about a monster! It was chasing me all over the house!",  "You",  3.5),
+        ("Mom: Oh honey. We've talked about this. Monsters aren't real.",                       "Mom",  3.0),
+        ("You: But there was something in my closet! I saw it before I had my nightmare!",      "Mom",  3.0),
+        ("Mom: It was just a dream. Go back to bed.",                                           "Mom",  4.0),
+        ("You: But I'm too scared, Mom... I can't sleep.",                                      "You",  3.5),
+        ("Mom: Ugh. When will you learn to grow up and face your fears?",                       "Mom",  4.5),
         ("...",                                                             "",     1.5),
     ]
 
@@ -1620,6 +1630,10 @@ class Scene5BadEnding(State):
         # Distorted, red-tinted
         pygame.draw.rect(surface, (100, 20, 20), (cx - 30, SCREEN_H - 280, 60, 140))
         pygame.draw.ellipse(surface, (60, 10, 10), (cx - 50, SCREEN_H - 330, 100, 90))
+        tmp   = pygame.Surface((50, 90), pygame.SRCALPHA)
+        for i in range(7):
+            tx = 5 + i * 6
+            pygame.draw.polygon(tmp, (200, 0, 0), [(tx, 55), (tx + 4, 68), (tx + 8, 55)])
         for ex in (cx - 20, cx + 20):
             pygame.draw.circle(surface, (255, 50, 0), (ex, SCREEN_H - 300), 12)
             pygame.draw.circle(surface, C_BLACK, (ex, SCREEN_H - 300), 5)
@@ -1637,13 +1651,15 @@ class Scene6GoodEnding(State):
 
     LINES = [
         ("Mom: Good morning! How did you sleep?",                          "Mom", 4.0),
-        ("You: Actually... really well.",                                  "You", 3.0),
+        ("You: I slept really well.",                                      "You", 3.0),
         ("Mom: Really? After our talk last night I thought you'd be scared.", "Mom", 4.5),
-        ("You: I wasn't. I feel good.",                                    "You", 3.0),
-        ("Mom: I'm so proud of you. You've really grown up.",              "Mom", 4.0),
-        ("Mom: Oh! I almost forgot... I finally saved enough money.",      "Mom", 4.0),
+        ("You: No, I'm not scared. I feel great.",                         "You", 3.0),
+        ("Mom: Wow, I'm so proud of you! You've really grown up and learned to face your fears.", "Mom", 4.0),
+        ("Mom: Oh! I almost forgot. I finally saved enough money...",      "Mom", 4.0),
+        ("You: Money for what, Mom?",                                      "You", 2.5),
+        ("Mom: You know that vacation you've always wanted to go on?",     "Mom", 4.0),
         ("Mom: We're going to Cancun!",                                    "Mom", 5.0),
-        ("...",                                                             "",    2.0),
+        ("...",                                                             "",   2.0),
     ]
 
     def on_enter(self, game):
@@ -1728,7 +1744,6 @@ class FakeCrashState(State):
     def on_enter(self, game):
         game.scene_mgr.current_scene_name = "fake_crash"
         game.audio.stop_all()
-        game.audio.play_sfx("crash_sound")
         self._surf  = build_fake_crash_surface()
         self._timer = 0.0
         self._done  = False
@@ -1757,7 +1772,7 @@ class JumpscareState(State):
         self._surf  = build_jumpscare_surface()
         self._timer = 0.0
         self._shake = 18.0
-        # ASSET: game.audio.play_sfx("jumpscare_scream")
+        game.audio.play_sfx("crash_sound");
 
     def handle_event(self, game, event):
         if event.type == pygame.KEYDOWN:

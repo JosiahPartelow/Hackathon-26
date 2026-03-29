@@ -56,7 +56,7 @@ except ImportError:
 # GLOBAL CONFIGURATION
 # =============================================================================
 
-MOCK_MODE    = True           # False → real Muse EEG via LSL
+MOCK_MODE    = False           # False → real Muse EEG via LSL
 
 SCREEN_W     = 1280
 SCREEN_H     = 720
@@ -390,7 +390,7 @@ class AudioManager:
     def _update_music(self, stress: float):
         if not self.eeg_active:
             return
-        key = "calm_music" if stress < STRESS_HIGH else "tense_music"
+        key = "tense_music"
         if key != self._current_music_key:
             self.play_music(key)
 
